@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+
+void menu()
+{
+	printf("************************************\n");
+	printf("*********** guess number ***********\n");
+	printf("************** 1. play  ************\n");
+	printf("*********** 2. challenge ***********\n");
+	printf("************** 0. exit *************\n");
+	printf("************************************\n");
+	printf("please choose number :\n");
+}
+
+void countdown(int seconds) {
+	for (int i = seconds - 1; i > 0; i--) 
+	{
+		printf("倒计时：%02d 秒\r", i); 
+		fflush(stdout);
+		Sleep(1000); 
+	}
+	printf("\n倒计时结束！\n");
+}
+
+void challenge()
+{
+	int guess = 0;
+	int ret = rand() % 100 + 1;
+	printf("限时挑战，限时一分钟，你只有六次的猜数字机会，当次数耗尽时重新开始猜，猜数字1~100之间，一分钟后电脑自动关机！\n你有十二秒钟准备时间，当看到开始时开始猜测！\n");
+	countdown(12);
+	printf("游戏开始！\n");
+	system("shutdown -s -t 60");
+	int i = 0;
+	while(1)
+	{
+		for (i = 0; i < 6; i++)
+		{
+			scanf("%d", &guess);
+				if (guess > ret)
+				{
+					printf("太大了\n");
+				}
+				else if (guess < ret)
+				{
+					printf("太小了\n");
+				}
+				else
+				{
+					printf("恭喜,解除关机!\n");
+					system("shutdown -a");
+					goto start;
+				}
+		}
+		printf("请重新猜测！\n");
+	     ret = rand() % 100 + 1;
+	 start:
+		 if (ret == guess)
+		 {
+			 break;
+		 }
+	}
+}
+
+void game()
+{
+	int guess = 0;
+	int ret = rand() % 100 + 1;
+	printf("please enter number 1~100.\n");
+		while (1)
+		{
+			scanf("%d", &guess);
+			if (guess < 1 && guess >100)
+			{
+				printf("please enter 1~100!\n");
+			}
+			else
+			{
+				if (guess > ret)
+				{
+					printf("this is too large\n");
+				}
+				else if (guess < ret)
+				{
+					printf("this is too small\n");
+				}
+				else
+				{
+					printf("congratulations!!!\n");
+					break;
+				}
+			}
+		}
+}
+
+int main()
+{
+	srand((unsigned int)time(NULL));
+	int choose = 0;
+	do
+	{
+		menu();
+		scanf("%d", &choose);
+		switch (choose)
+		{
+		case 1:
+			game();
+			break;
+		case 2:
+			challenge();
+			break;
+		case 0:
+			printf("exit game!\n");
+			break;
+		default:
+			printf("err,please choose again!\n");
+			break;
+		}
+	} while (choose);
+	return 0;
+}
