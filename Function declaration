@@ -1,0 +1,28 @@
+add.c :
+
+int add(int x,int y)
+{
+return x + y;
+}
+
+add.h:
+
+#pragma once
+
+int add (int x ,int y)
+
+
+test.c:
+
+#include <stdio.h>
+#include "add.h"
+#pragma comment (lib,"add.lib")
+
+int main ()
+{
+int a = 20;
+int b = 10;
+int sum = add(a,b);
+printf("%d", sum);
+return 0;
+}
