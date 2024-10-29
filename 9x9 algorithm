@@ -1,0 +1,20 @@
+#include <stdio.h>
+
+int main()
+{
+	int a = 1;
+	int b = 1;
+	int sum = 0;
+	for (a = 1 , b = 1; b <= a;b++)
+	{
+		sum = a*b;
+		printf("%d * %d = %d  ", a, b, sum);
+		if (a == b && a != 9)
+		{
+			++a;
+			printf("\n");
+			b = 0;
+		}
+	}
+	return 0;
+}
