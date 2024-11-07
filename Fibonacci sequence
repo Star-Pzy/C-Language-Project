@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+int function(int n)
+{
+	int a = 1;
+	int b = 1;
+	int c = 0;
+	if (n > 2)
+	{
+		return function(n-1) + function(n-2);
+	}
+	if(n>0&&n<=2)
+	{
+		return 1;
+	}
+}
+
+int main()
+{
+	int n = 0;
+	int i = 3;
+	scanf("%d", &n);
+	int num = function(n);
+	printf("%d", num);
+	return 0;
+}
