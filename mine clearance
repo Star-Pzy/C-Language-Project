@@ -1,0 +1,300 @@
+game.h:
+
+#pragma once
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define cols 11
+#define rows 11
+#define col 9
+#define row 9
+#define Mine 10
+
+void game(char real[cols][rows], char show[cols][rows]);
+void setboard(char arr[cols][rows], char ret);
+void displayboard(char arr[cols][rows]);
+void setmine(char real[cols][rows]);
+void findmine(char real[cols][rows], char show[cols][rows]);
+char count(char real[cols][rows], int x, int y);
+int win(char show[cols][rows]);
+void open(char real[cols][rows], char show[cols][rows], int 
+
+game.c:
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include "game.h"
+
+void game(char real[cols][rows],char show[cols][rows])
+{
+	setboard(real,'0');
+	setboard(show,'*');
+	setmine(real);
+	//查看雷存放地点:
+	//displayboard(real);    
+	//printf("\n");
+	displayboard(show);
+	findmine(real,show);
+}
+
+void setboard(char arr[cols][rows],char ret)
+{
+	int i = 0;
+	int j = 0;
+	for (i = 1; i <= col; i++)
+	{
+		for (j = 1; j <= col; j++)
+		{
+			arr[i][j] = ret;
+		}
+	}
+}
+
+void setmine(char real [cols][rows])
+{
+	int i = 0;
+	while (i<Mine)
+	{
+		int x = rand() % col + 1;
+		int y = rand() % row + 1;
+		if (real[x][y] == '0')
+		{
+			real[x][y] = '1';
+			i++;
+		}
+	}
+}
+
+void displayboard(char arr[cols][rows])
+{
+	int x = 0;
+	int y = 0;
+	printf("------扫雷游戏-----\n");
+	for (y = 0; y <= col; y++)
+	{
+		printf("%d ", y);
+	}
+	printf("\n");
+	for (x = 1; x <= col; x++)
+	{
+		printf("%d ", x);
+		for (y = 1; y <= row;y++)
+		{
+			printf("%c ", arr[x][y]);
+		}
+		printf("\n");
+	}
+}
+
+void findmine(char real[cols][rows], char show[cols][rows])
+{
+	int x = 0;
+	int y = 0;
+	while (1)
+	{
+		printf("请输入坐标(如果输入的坐标前加1，如11 11，将触发标点功能，将1 1坐标标点):");
+		scanf("%d %d", &x, &y);
+		if (x > 10 && x < 20&&y>10 && y < 20)
+		{
+			if (show[x - 10][y - 10] == '*')
+			{
+				show[x - 10][y - 10] = 'X';
+				displayboard(show);
+				continue;
+			}
+			if (show[x - 10][y - 10] == 'X')
+			{
+				show[x - 10][y - 10] = '*';
+				displayboard(show);
+				continue;
+			}
+		}
+		if (x < 1 || x>19 || y < 1 || y>19||x==10||y==10||x>10&&x<20&&y>0&&y<10||x>0&&x<10&&y>10&&y<20)
+		{
+			printf("坐标非法，重新输入！\n");
+			continue;
+		}
+		if (real[x][y] != '1'&&x>0&&x<10&&y>0&&y<10)
+		{
+			if (show[x][y] == '*'||show[x][y]=='X')
+			{
+				show[x][y] = count(real, x, y);
+				open(real,show,x,y);
+				displayboard(show);
+			}
+			else
+			{
+				printf("坐标已选中，请重新输入！\n");
+			}
+		}
+		else
+		{
+			printf("你被炸死了，游戏失败！\n");
+			break;
+		}
+		if (win(show))
+		{
+			displayboard(real);
+			printf("\n");
+			printf("恭喜你，游戏胜利！\n");
+			break;
+		}
+	}
+}
+
+char count(char real[cols][rows] ,int x,int y)
+{
+	int num = 0;
+	if (real[x - 1][y - 1] == '1')
+		num++;
+	if (real[x - 1][y] == '1')
+		num++;
+	if (real[x - 1][y + 1] == '1')
+		num++;
+	if (real[x][y - 1] == '1')
+		num++;
+	if (real[x][y + 1] == '1')
+		num++;
+	if (real[x + 1][y - 1] == '1')
+		num++;
+	if (real[x + 1][y] == '1')
+		num++;
+	if (real[x + 1][y + 1] == '1')
+		num++;
+	return num + '0';
+}
+
+int win(char show[cols][rows])
+{
+	int num = 0;
+	int x = 0;
+	int y = 0;
+	for (x = 1; x <= col; x++)
+	{
+		for (y = 1; y <= row; y++)
+		{
+			if (show[x][y]=='*')
+			{
+				num++;
+			}
+		}
+	}
+	if (num == Mine)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+void open(char real[cols][rows], char show[cols][rows], int x, int y)
+{
+	if (show[x][y] == '0')
+	{
+		show[x][y] = ' ';
+		if (show[x - 1][y - 1] == '*')
+		{
+			show[x - 1][y - 1] = count(real, x - 1, y - 1);
+			if (show[x - 1][y - 1] == '0')
+			{
+				open(real, show, x - 1, y - 1);
+			}
+		}
+		if (show[x - 1][y] == '*')
+		{
+			show[x - 1][y] = count(real, x - 1, y);
+			if (show[x - 1][y] == '0')
+			{
+				open(real, show, x - 1, y);
+			}
+		}
+		if (show[x - 1][y + 1] == '*')
+		{
+			show[x - 1][y + 1] = count(real, x - 1, y + 1);
+			if (show[x - 1][y + 1] == '0')
+			{
+				open(real, show, x - 1, y + 1);
+			}
+		}
+		if (show[x][y - 1] == '*')
+		{
+			show[x][y - 1] = count(real, x, y - 1);
+			if (show[x][y - 1] == '0')
+			{
+				open(real, show, x, y - 1);
+			}
+		}
+		if (show[x][y + 1] == '*')
+		{
+			show[x][y + 1] = count(real, x, y + 1);
+			if (show[x][y + 1] == '0')
+			{
+				open(real, show, x, y + 1);
+			}
+		}
+		if (show[x+1][y - 1] == '*')
+		{
+			show[x+1][y - 1] = count(real, x+1, y - 1);
+			if (show[x+1][y - 1] == '0')
+			{
+				open(real, show, x+1, y - 1);
+			}
+		}
+		if (show[x + 1][y] == '*')
+		{
+			show[x + 1][y] = count(real, x + 1, y);
+			if (show[x + 1][y] == '0')
+			{
+				open(real, show, x + 1, y);
+			}
+		}
+		if (show[x + 1][y + 1] == '*')
+		{
+			show[x + 1][y + 1] = count(real, x + 1, y + 1);
+			if (show[x + 1][y + 1] == '0')
+			{
+				open(real, show, x + 1, y + 1);
+			}
+		}
+	}
+}
+
+test.c:
+
+#define _CRT_SECURE_NO_WARNINGS
+#include "game.h"
+
+void menu()
+{
+	printf("---------- Fine Mine ----------\n");
+	printf("            1. play            \n");
+	printf("            0. exit            \n");
+	printf("-------------------------------\n");
+	printf("请选择:");
+}
+
+int main()
+{
+	int input = 0;
+	char real[cols][rows] = { 0 };
+	char show[cols][rows] = { 0 };
+	srand((unsigned int)time(NULL));
+	do
+	{
+		menu();
+		scanf("%d",&input);
+		switch (input)
+		{
+		case 1:
+			game(real,show);
+			break;
+		case 0:
+			printf("退出游戏！\n");
+			break;
+		default:
+			printf("选择错误，请重新选择！\n");
+			break;
+		}
+	} while (input);
+	return 0;
+}
